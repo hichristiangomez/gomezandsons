@@ -1,62 +1,457 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>All Photos</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      background: #0a0a0a;
-      color: #fff;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      padding: 40px 20px;
-    }
-    header {
-      max-width: 1400px;
-      margin: 0 auto 40px;
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-    }
-    h1 { font-size: 24px; font-weight: 500; letter-spacing: 0.5px; }
-    a { color: #aaa; text-decoration: none; font-size: 14px; }
-    a:hover { color: #fff; }
-    .grid {
-      max-width: 1400px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 4px;
-    }
-    .grid img {
-      width: 100%;
-      aspect-ratio: 1 / 1;
-      object-fit: cover;
-      display: block;
-      transition: opacity 0.2s;
-    }
-    .grid img:hover { opacity: 0.75; cursor: pointer; }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Christian Gomez — All Photos</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Tenor+Sans&family=Cormorant+Garamond:wght@300;400;500&family=Syne:wght@400;500;600&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+
+<script>
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "font": "Tenor Sans",
+  "palette": "paper",
+  "density": "roomy",
+  "accent": "#2553c9"
+}/*EDITMODE-END*/;
+
+const FONT_STACKS = {
+  "Tenor Sans":        `"Tenor Sans", ui-serif, Georgia, serif`,
+  "Instrument Serif":  `"Instrument Serif", ui-serif, Georgia, serif`,
+  "Cormorant":         `"Cormorant Garamond", ui-serif, Georgia, serif`,
+  "Syne":              `"Syne", ui-sans-serif, system-ui, sans-serif`,
+  "IBM Plex Mono":     `"IBM Plex Mono", ui-monospace, monospace`
+};
+
+const PALETTES = {
+  paper:   { bg:"#f4f1ec", ink:"#17140f", mute:"#8a847a", line:"#d9d3c6" },
+  bone:    { bg:"#faf8f4", ink:"#111111", mute:"#8f8a82", line:"#e6e1d6" },
+  snow:    { bg:"#ffffff", ink:"#0a0a0a", mute:"#8a8a8a", line:"#ececec" },
+  ink:     { bg:"#0e0d0b", ink:"#ece8df", mute:"#7a736a", line:"#22201c" }
+};
+</script>
+
+<style>
+  :root{
+    --bg:#f4f1ec; --ink:#17140f; --mute:#8a847a; --line:#d9d3c6;
+    --accent:#2553c9;
+    --serif: "Tenor Sans", ui-serif, Georgia, serif;
+    --mono: "IBM Plex Mono", ui-monospace, monospace;
+    --maxw: 1320px;
+    --gut: 32px;
+    --pad: 40px;
+    --cols: 4;
+    --sheetgap: 14px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);}
+  body{
+    font-family:var(--serif);
+    font-weight:400;
+    font-size:16px;
+    line-height:1.45;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+  img{display:block;max-width:100%}
+  a{color:inherit;text-decoration:none}
+
+  /* nav */
+  nav.top{
+    position:sticky; top:0; z-index:40;
+    background: color-mix(in oklab, var(--bg) 88%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  nav.top .bar{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:18px var(--pad);
+    max-width:var(--maxw); margin:0 auto;
+    gap: 24px;
+  }
+  nav.top .mark{font-family:var(--serif); font-size:17px; letter-spacing:.01em}
+  nav.top .mark em{font-style:normal; color:var(--mute)}
+  nav.top ul{
+    list-style:none; display:flex; gap:28px; margin:0; padding:0;
+    font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+  }
+  nav.top ul a{color:var(--mute); transition:color .2s}
+  nav.top ul a:hover{color:var(--ink)}
+  nav.top ul a.active{color:var(--ink)}
+
+  /* page header */
+  .pagehead{
+    max-width:var(--maxw); margin:0 auto;
+    padding: 60px var(--pad) 20px;
+    display:flex; justify-content:space-between; align-items:baseline;
+    border-bottom:1px solid var(--line);
+  }
+  .pagehead h1{
+    font-family:var(--serif); font-weight:400;
+    font-size: clamp(28px, 3vw, 40px);
+    letter-spacing:-.01em; margin:0;
+  }
+  .pagehead .count{
+    font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--mute);
+  }
+
+  /* archive — main page */
+  .archive{
+    max-width:var(--maxw); margin:0 auto;
+    padding: 40px var(--pad) 40px;
+  }
+  .archive .grid{
+    display:grid;
+    grid-template-columns: repeat(var(--cols), 1fr);
+    gap: var(--sheetgap);
+  }
+  .archive .cell{
+    aspect-ratio: 1 / 1;
+    overflow:hidden;
+    cursor: zoom-in;
+    background: var(--bg);
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .archive .cell img{
+    max-width:100%; max-height:100%;
+    width:auto; height:auto;
+    object-fit:contain;
+  }
+
+  /* footer */
+  footer{
+    max-width:var(--maxw); margin: 0 auto;
+    padding: 48px var(--pad) 40px;
+    border-top:1px solid var(--line);
+    display:flex; justify-content:space-between; align-items:center;
+    font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--mute);
+    margin-top: 80px;
+  }
+
+  /* lightbox */
+  .lightbox{
+    position:fixed; inset:0; z-index:200;
+    background: rgba(8,7,6,.96);
+    display:none;
+    align-items:center; justify-content:center;
+    opacity:0; transition: opacity .25s ease;
+  }
+  .lightbox.open{display:flex; opacity:1}
+  .lightbox .stage{
+    position:relative;
+    width: 86vw; height: 82vh;
+    max-width: 1600px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .lightbox .stage img{
+    max-width:100%; max-height:100%;
+    object-fit:contain;
+  }
+  .lightbox .chrome{
+    position:fixed; left:0; right:0;
+    display:flex; justify-content:space-between; align-items:center;
+    padding: 20px 28px;
+    color: rgba(255,255,255,.7);
+    font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    pointer-events:none;
+  }
+  .lightbox .chrome.top{top:0}
+  .lightbox .chrome > *{pointer-events:auto}
+  .lightbox .close{
+    background:none; border:0; color:rgba(255,255,255,.75); cursor:pointer;
+    font-family:var(--mono); font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+    padding:6px 10px;
+  }
+  .lightbox .close:hover{color:#fff}
+  .lightbox .nav{
+    position:fixed; top:50%; transform:translateY(-50%);
+    background:none; border:0; color:rgba(255,255,255,.5); cursor:pointer;
+    font-family:var(--mono); font-size:24px; padding: 16px 22px;
+  }
+  .lightbox .nav:hover{color:#fff}
+  .lightbox .nav.prev{left:0}
+  .lightbox .nav.next{right:0}
+  .lightbox .counter{
+    position:fixed; right:28px; bottom:20px;
+    color: rgba(255,255,255,.55);
+    font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+  }
+
+  /* tweaks panel */
+  #tweaks{
+    position:fixed; right:20px; bottom:20px; z-index:100;
+    background:var(--bg); color:var(--ink);
+    border:1px solid var(--line);
+    width:280px;
+    font-family:var(--mono); font-size:11px; letter-spacing:.06em;
+    display:none;
+    box-shadow: 0 10px 40px rgba(0,0,0,.08);
+  }
+  #tweaks.open{display:block}
+  #tweaks .hd{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:12px 14px;
+    border-bottom:1px solid var(--line);
+    text-transform:uppercase; letter-spacing:.18em;
+  }
+  #tweaks .hd button{
+    background:none; border:none; color:var(--mute); cursor:pointer;
+    font-family:var(--mono); font-size:14px; line-height:1;
+  }
+  #tweaks .grp{padding:12px 14px; border-bottom:1px solid var(--line)}
+  #tweaks .grp:last-child{border-bottom:0}
+  #tweaks .lbl{color:var(--mute); text-transform:uppercase; letter-spacing:.14em; font-size:10px; margin-bottom:8px}
+  #tweaks .row{display:flex; flex-wrap:wrap; gap:6px}
+  #tweaks .row button{
+    background:transparent; border:1px solid var(--line); color:var(--ink);
+    padding:6px 9px;
+    font-family:var(--mono); font-size:10px; letter-spacing:.08em; text-transform:uppercase;
+    cursor:pointer;
+  }
+  #tweaks .row button.on{background:var(--ink); color:var(--bg); border-color:var(--ink)}
+  #tweaks .pal{display:flex; gap:6px; flex-wrap:wrap}
+  #tweaks .pal button{width:28px; height:28px; border-radius:50%; padding:0; border:1px solid var(--line); cursor:pointer; position:relative}
+  #tweaks .pal button.on::after{
+    content:""; position:absolute; inset:-4px; border:1px solid var(--ink); border-radius:50%;
+  }
+  #tweaks .acc{display:flex; gap:6px; flex-wrap:wrap}
+  #tweaks .acc button{width:22px; height:22px; border-radius:50%; padding:0; border:1px solid transparent; cursor:pointer}
+  #tweaks .acc button.on{border-color:var(--ink)}
+
+  @media (max-width: 860px){
+    :root{--pad:20px}
+    .archive .grid{grid-template-columns: repeat(2, 1fr) !important}
+    .pagehead{flex-direction:column; align-items:flex-start; gap:8px}
+  }
+</style>
 </head>
 <body>
-  <header>
-    <h1>All Photos</h1>
-    <a href="index.html">← Back</a>
-  </header>
-  <div class="grid" id="grid"></div>
-  <script src="config.js"></script>
-  <script>
-    const grid = document.getElementById("grid");
-    const pad = (n) => String(n).padStart(3, "0");
 
-    for (let n = 1; n <= POOL_SIZE; n++) {
-      const img = document.createElement("img");
-      img.src = `images/site${pad(n)}.jpg`;
-      img.loading = "lazy";  // critical for 200+ images
-      img.alt = `Photo ${n}`;
-      grid.appendChild(img);
-    }
-  </script>
+<!-- NAV -->
+<nav class="top">
+  <div class="bar">
+    <div class="mark"><a href="index.html">Christian Gomez <em>— Photographer</em></a></div>
+    <ul>
+      <li><a href="index.html#archive">Archive</a></li>
+      <li><a href="all.html" class="active">All</a></li>
+      <li><a href="index.html#about">About</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- PAGE HEAD -->
+<section class="pagehead">
+  <h1>All Photos</h1>
+  <span class="count" id="photoCount"></span>
+</section>
+
+<!-- ARCHIVE — all photos -->
+<section class="archive" id="archive">
+  <div class="grid" id="sheetGrid"></div>
+</section>
+
+<footer>
+  <span>© Christian Gomez, 2022—2026</span>
+  <span>Site · v06</span>
+  <span>Colophon ↗</span>
+</footer>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <div class="chrome top">
+    <span></span>
+    <button class="close" id="lbClose">Close ✕</button>
+  </div>
+  <button class="nav prev" id="lbPrev" aria-label="Previous">←</button>
+  <div class="stage" id="lbStage"></div>
+  <button class="nav next" id="lbNext" aria-label="Next">→</button>
+  <span class="counter" id="lbCount">—</span>
+</div>
+
+<!-- TWEAKS -->
+<div id="tweaks" aria-hidden="true">
+  <div class="hd">
+    <span>Tweaks</span>
+    <button id="tweaksClose" aria-label="Close">×</button>
+  </div>
+  <div class="grp">
+    <div class="lbl">Typeface</div>
+    <div class="row" id="fontRow"></div>
+  </div>
+  <div class="grp">
+    <div class="lbl">Palette</div>
+    <div class="pal" id="palRow"></div>
+  </div>
+  <div class="grp">
+    <div class="lbl">Accent</div>
+    <div class="acc" id="accRow"></div>
+  </div>
+  <div class="grp">
+    <div class="lbl">Archive density</div>
+    <div class="row" id="densRow"></div>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script>
+/* Build full archive grid — every photo from site001 to siteN, in order. */
+(function(){
+  const grid = document.getElementById('sheetGrid');
+  const counter = document.getElementById('photoCount');
+  if(!grid) return;
+
+  function pad(n){ return String(n).padStart(3, '0'); }
+
+  let html = '';
+  for(let n = 1; n <= POOL_SIZE; n++){
+    const src = `images/site${pad(n)}.jpg`;
+    html += `<div class="cell" data-shot data-src="${src}">
+      <img src="${src}" alt="" loading="lazy">
+    </div>`;
+  }
+  grid.innerHTML = html;
+  if(counter) counter.textContent = POOL_SIZE + ' frames';
+})();
+
+/* Lightbox */
+(function(){
+  const lb = document.getElementById('lightbox');
+  const stage = document.getElementById('lbStage');
+  const count = document.getElementById('lbCount');
+  let shots = [], idx = 0;
+
+  function collect(){ shots = Array.from(document.querySelectorAll('[data-shot]')); }
+  function render(){
+    const el = shots[idx]; if(!el) return;
+    const src = el.dataset.src || el.querySelector('img')?.src;
+    stage.innerHTML = '';
+    const img = document.createElement('img');
+    img.src = src;
+    stage.appendChild(img);
+    count.textContent = String(idx+1).padStart(2,'0') + ' / ' + String(shots.length).padStart(2,'0');
+  }
+  function open(el){
+    collect();
+    idx = shots.indexOf(el);
+    if(idx < 0) idx = 0;
+    render();
+    lb.classList.add('open'); lb.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+  }
+  function close(){
+    lb.classList.remove('open'); lb.setAttribute('aria-hidden','true');
+    document.body.style.overflow = ''; stage.innerHTML = '';
+  }
+  function step(d){ if(!shots.length) return; idx = (idx+d+shots.length)%shots.length; render(); }
+
+  document.addEventListener('click', (e) => {
+    const t = e.target.closest('[data-shot]');
+    if(t){ e.preventDefault(); open(t); }
+  });
+  document.getElementById('lbClose').addEventListener('click', close);
+  document.getElementById('lbPrev').addEventListener('click', () => step(-1));
+  document.getElementById('lbNext').addEventListener('click', () => step(1));
+  lb.addEventListener('click', (e) => { if(e.target === lb) close(); });
+  document.addEventListener('keydown', (e) => {
+    if(!lb.classList.contains('open')) return;
+    if(e.key === 'Escape') close();
+    else if(e.key === 'ArrowLeft') step(-1);
+    else if(e.key === 'ArrowRight') step(1);
+  });
+})();
+
+/* Tweaks */
+(function(){
+  const state = { ...TWEAK_DEFAULTS };
+  const FONTS = Object.keys(FONT_STACKS);
+  const PALS = Object.keys(PALETTES);
+  const DENS = {
+    tight: { cols:6, gap:8,  pad:'32px', gut:'24px' },
+    roomy: { cols:4, gap:14, pad:'40px', gut:'32px' },
+    loose: { cols:3, gap:20, pad:'56px', gut:'48px' }
+  };
+  const ACCENTS = ['#2553c9', '#9a3a1f', '#c96a2e', '#2a4a3a', '#7a2a5e', '#1a1a1a'];
+
+  function apply(){
+    const r = document.documentElement.style;
+    r.setProperty('--serif', FONT_STACKS[state.font] || FONT_STACKS['Tenor Sans']);
+    const p = PALETTES[state.palette] || PALETTES.paper;
+    r.setProperty('--bg', p.bg);
+    r.setProperty('--ink', p.ink);
+    r.setProperty('--mute', p.mute);
+    r.setProperty('--line', p.line);
+    r.setProperty('--accent', state.accent);
+    const d = DENS[state.density] || DENS.roomy;
+    r.setProperty('--cols', d.cols);
+    r.setProperty('--sheetgap', d.gap + 'px');
+    r.setProperty('--pad', d.pad);
+    r.setProperty('--gut', d.gut);
+    document.querySelectorAll('#fontRow button').forEach(b=>b.classList.toggle('on', b.dataset.v===state.font));
+    document.querySelectorAll('#palRow button').forEach(b=>b.classList.toggle('on', b.dataset.v===state.palette));
+    document.querySelectorAll('#accRow button').forEach(b=>b.classList.toggle('on', b.dataset.v===state.accent));
+    document.querySelectorAll('#densRow button').forEach(b=>b.classList.toggle('on', b.dataset.v===state.density));
+  }
+  function persist(patch){
+    Object.assign(state, patch);
+    apply();
+    try{ window.parent.postMessage({type:'__edit_mode_set_keys', edits: patch}, '*'); }catch(e){}
+  }
+
+  const fontRow = document.getElementById('fontRow');
+  FONTS.forEach(f=>{
+    const b = document.createElement('button');
+    b.textContent = f; b.dataset.v = f;
+    b.style.fontFamily = FONT_STACKS[f];
+    b.onclick = ()=>persist({font:f});
+    fontRow.appendChild(b);
+  });
+  const palRow = document.getElementById('palRow');
+  PALS.forEach(p=>{
+    const b = document.createElement('button');
+    b.dataset.v = p; b.title = p;
+    b.style.background = PALETTES[p].bg;
+    b.style.boxShadow = 'inset 0 0 0 1px ' + PALETTES[p].line;
+    b.onclick = ()=>persist({palette:p});
+    palRow.appendChild(b);
+  });
+  const accRow = document.getElementById('accRow');
+  ACCENTS.forEach(a=>{
+    const b = document.createElement('button');
+    b.dataset.v = a; b.style.background = a;
+    b.onclick = ()=>persist({accent:a});
+    accRow.appendChild(b);
+  });
+  const densRow = document.getElementById('densRow');
+  ['tight','roomy','loose'].forEach(d=>{
+    const b = document.createElement('button');
+    b.textContent = d; b.dataset.v = d;
+    b.onclick = ()=>persist({density:d});
+    densRow.appendChild(b);
+  });
+
+  apply();
+
+  const panel = document.getElementById('tweaks');
+  document.getElementById('tweaksClose').onclick = ()=>{
+    panel.classList.remove('open');
+    try{ window.parent.postMessage({type:'__edit_mode_deactivated'}, '*'); }catch(e){}
+  };
+  window.addEventListener('message', (e)=>{
+    const d = e.data || {};
+    if(d.type === '__activate_edit_mode') panel.classList.add('open');
+    if(d.type === '__deactivate_edit_mode') panel.classList.remove('open');
+  });
+  try{ window.parent.postMessage({type:'__edit_mode_available'}, '*'); }catch(e){}
+})();
+</script>
+
 </body>
 </html>
