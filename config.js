@@ -1,0 +1,1 @@
+const POOL_SIZE = 226;  // update this when you add photos

@@ -280,6 +280,7 @@ const PALETTES = {
     <div class="mark">Christian Gomez <em>— Photographer</em></div>
     <ul>
       <li><a href="#archive">Archive</a></li>
+      <li><a href="all.html">All</a></li>
       <li><a href="#about">About</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
@@ -363,6 +364,7 @@ const PALETTES = {
   </div>
 </div>
 
+<script src="config.js"></script>
 <script>
 /* Build archive grid — pool of 206 frames, randomized 100-photo sheet per refresh.
    Anti-clustering: after shuffling, re-space any photos with adjacent numeric IDs
@@ -371,7 +373,6 @@ const PALETTES = {
   const grid = document.getElementById('sheetGrid');
   if(!grid) return;
 
-  const POOL_SIZE = 226;        // site001 … site226
   const SHEET_SIZE = 100;
   const NEIGHBOR_GAP = 6;       // min index distance enforced between same-shoot photos
   const SHOOT_WINDOW = 3;       // ids within ±3 are treated as the same shoot
