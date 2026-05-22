@@ -1,24 +1,21 @@
-const POOL_SIZE = 226;  // update this when you add photos
-
-//This loads 24 images at a time and will inifite scroll. This gets you a smoother load. Trust me, homie.
+// This loads 24 images at a time and will infinite scroll. This gets you a smoother load. Trust me, homie.
 (function(){
   const grid = document.getElementById('sheetGrid');
   const counter = document.getElementById('photoCount');
   if(!grid) return;
 
   const batchSize = 24;
+  let files = [];
   let shown = 0;
   let loading = false;
 
-  function pad(n){ return String(n).padStart(3, '0'); };
-
   function showNextImages(){
-    if(loading || shown >= POOL_SIZE) return;
+    if(loading || shown >= files.length) return;
     loading = true;
-    const until = Math.min(shown + batchSize, POOL_SIZE);
+    const until = Math.min(shown + batchSize, files.length);
     const batch = document.createDocumentFragment();
-    for(let i = shown + 1; i <= until; i++){
-      const src = `images/site${pad(i)}.jpg`;
+    for(let i = shown; i < until; i++){
+      const src = `images/${files[i]}`;
       const cell = document.createElement('div');
       cell.className = 'cell';
       cell.dataset.shot = '';
@@ -28,7 +25,7 @@ const POOL_SIZE = 226;  // update this when you add photos
     }
     grid.appendChild(batch);
     shown = until;
-    if(counter) counter.textContent = + POOL_SIZE + ' frames';
+    if(counter) counter.textContent = files.length + ' frames';
     loading = false;
   }
 
@@ -41,5 +38,13 @@ const POOL_SIZE = 226;  // update this when you add photos
   }, { rootMargin: '400px' });
   nearTheBottom.observe(bottomEdge);
 
-  showNextImages();
+  // Load the manifest, then start rendering
+  fetch('images.json')
+    .then(r => r.json())
+    .then(list => {
+      files = list;
+      nearTheBottom.observe(bottomEdge);
+      showNextImages();
+    })
+    .catch(err => console.error('Could not load images.json:', err));
 })();
