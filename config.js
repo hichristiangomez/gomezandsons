@@ -39,12 +39,27 @@
   nearTheBottom.observe(bottomEdge);
 
   // Load the manifest, then start rendering
-  fetch('images.json')
-    .then(r => r.json())
-    .then(list => {
+fetch('images.json')
+  .then(r => r.json())
+  .then(list => {
+    const mode = grid.dataset.mode;
+    if (mode === 'random') {
+      const count = parseInt(grid.dataset.count, 10) || 100;
+      files = shuffle(list).slice(0, count);
+    } else {
       files = list;
-      nearTheBottom.observe(bottomEdge);
-      showNextImages();
-    })
-    .catch(err => console.error('Could not load images.json:', err));
+    }
+    showNextImages();
+  })
+  .catch(err => console.error('Could not load images.json:', err));
+
+// Fisher-Yates shuffle — unbiased, in-place on a copy
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
 })();
