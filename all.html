@@ -302,24 +302,6 @@ const PALETTES = {
 
 <script src="config.js"></script>
 <script>
-/* Build full archive grid — every photo from site001 to siteN, in order. */
-(function(){
-  const grid = document.getElementById('sheetGrid');
-  const counter = document.getElementById('photoCount');
-  if(!grid) return;
-
-  function pad(n){ return String(n).padStart(3, '0'); }
-
-  let html = '';
-  for(let n = 1; n <= POOL_SIZE; n++){
-    const src = `images/site${pad(n)}.jpg`;
-    html += `<div class="cell" data-shot data-src="${src}">
-      <img src="${src}" alt="" loading="lazy">
-    </div>`;
-  }
-  grid.innerHTML = html;
-  if(counter) counter.textContent = POOL_SIZE + ' frames';
-})();
 
 /* Lightbox */
 (function(){
