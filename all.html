@@ -230,6 +230,10 @@ const PALETTES = {
     .archive .grid{grid-template-columns: repeat(2, 1fr) !important}
     .pagehead{flex-direction:column; align-items:flex-start; gap:8px}
   }
+
+  [data-theme="dark"] .archive .cell img{
+    filter: brightness(0.92);
+  }
 </style>
 </head>
 <body>
@@ -243,6 +247,7 @@ const PALETTES = {
       <li><a href="all.html" class="active">All</a></li>
       <li><a href="index.html#about">About</a></li>
       <li><a href="index.html#contact">Contact</a></li>
+      <li><a href="#" id="themeToggle" aria-label="Toggle dark mode">◐</a></li>
     </ul>
   </div>
 </nav>
@@ -301,6 +306,7 @@ const PALETTES = {
 </div>
 
 <script src="config.js"></script>
+<script src="theme.js"></script>
 <script>
 
 /* Lightbox */
