@@ -266,10 +266,12 @@ const PALETTES = {
   #tweaks .acc button.on{border-color:var(--ink)}
 
   @media (max-width: 860px){
-    :root{--pad:20px}
-    .archive .grid{grid-template-columns: repeat(2, 1fr) !important}
-    .about{grid-template-columns:1fr}
-  }
+  :root{--pad:20px}
+  .archive .grid{grid-template-columns: repeat(2, 1fr) !important}
+  .about{grid-template-columns:1fr}
+  nav.top ul{gap:18px; font-size:10px}
+  nav.top .bar{gap:12px}
+}
   
   [data-theme="dark"] .archive .cell img,
   [data-theme="dark"] .about .portrait img{
