@@ -376,61 +376,6 @@ const PALETTES = {
 <script src="config.js"></script>
 <script src="theme.js"></script>
 <script>
-/* Build archive grid — pool of 206 frames, randomized 100-photo sheet per refresh.
-   Anti-clustering: after shuffling, re-space any photos with adjacent numeric IDs
-   (i.e. likely from the same shoot) so they aren't placed next to each other. */
-(function(){
-  const grid = document.getElementById('sheetGrid');
-  if(!grid) return;
-
-  const SHEET_SIZE = 100;
-  const NEIGHBOR_GAP = 6;       // min index distance enforced between same-shoot photos
-  const SHOOT_WINDOW = 3;       // ids within ±3 are treated as the same shoot
-
-  function pad(n){ return String(n).padStart(3, '0'); }
-
-  // Build pool of numeric ids 1..N, then Fisher–Yates shuffle and take SHEET_SIZE
-  const pool = [];
-  for(let i = 1; i <= POOL_SIZE; i++) pool.push(i);
-  for(let i = pool.length - 1; i > 0; i--){
-    const j = Math.floor(Math.random() * (i + 1));
-    [pool[i], pool[j]] = [pool[j], pool[i]];
-  }
-  let picks = pool.slice(0, SHEET_SIZE);
-
-  // Anti-clustering pass: walk the order; if the current id is within SHOOT_WINDOW
-  // of any of the previous NEIGHBOR_GAP placements, swap it with a later candidate
-  // that doesn't conflict. Bounded number of attempts so it always terminates.
-  function tooClose(a, b){ return Math.abs(a - b) <= SHOOT_WINDOW; }
-  for(let i = 0; i < picks.length; i++){
-    const lookback = picks.slice(Math.max(0, i - NEIGHBOR_GAP), i);
-    const conflict = lookback.some(p => tooClose(p, picks[i]));
-    if(!conflict) continue;
-    // find a later index whose id doesn't clash with current lookback
-    // AND whose own neighbors won't clash if we swap it in
-    let swapped = false;
-    for(let k = i + 1; k < picks.length; k++){
-      const cand = picks[k];
-      if(lookback.some(p => tooClose(p, cand))) continue;
-      // also check that picks[i] won't clash where cand currently sits
-      const candLookback = picks.slice(Math.max(0, k - NEIGHBOR_GAP), k).filter((_,idx) => idx + Math.max(0, k - NEIGHBOR_GAP) !== i);
-      if(candLookback.some(p => tooClose(p, picks[i]))) continue;
-      [picks[i], picks[k]] = [picks[k], picks[i]];
-      swapped = true;
-      break;
-    }
-    // if nothing better exists, leave it — better than dropping a slot
-  }
-
-  let html = '';
-  picks.forEach(n => {
-    const src = `images/site${pad(n)}.jpg`;
-    html += `<div class="cell" data-shot data-src="${src}">
-      <img src="${src}" alt="" loading="lazy">
-    </div>`;
-  });
-  grid.innerHTML = html;
-})();
 
 /* Lightbox */
 (function(){
