@@ -22,11 +22,8 @@
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   }
 
-  // Apply immediately
   applyTheme(currentTheme());
 
-  // Re-apply AFTER the Tweaks script finishes so it can't override us.
-  // Tweaks runs on DOMContentLoaded, so we wait one tick past that.
   document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => applyTheme(currentTheme()), 0);
 
@@ -40,8 +37,6 @@
     });
   });
 
-  // Also re-apply if anything else fiddles with CSS variables later
-  // (catches the Tweaks panel's apply() function)
   const observer = new MutationObserver(() => {
     const wantTheme = currentTheme();
     if(document.documentElement.getAttribute('data-theme') !== wantTheme){

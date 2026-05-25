@@ -564,33 +564,5 @@ const PALETTES = {
 })();
 </script>
 
-<script>
-(function(){
-  const btn = document.getElementById('themeToggle');
-  if(!btn) return;
-
-  function applyTheme(theme){
-    const p = PALETTES[theme === 'dark' ? 'ink' : 'paper'];
-    const r = document.documentElement.style;
-    r.setProperty('--bg', p.bg);
-    r.setProperty('--ink', p.ink);
-    r.setProperty('--mute', p.mute);
-    r.setProperty('--line', p.line);
-    document.documentElement.setAttribute('data-theme', theme);
-    btn.textContent = theme === 'dark' ? '◑' : '◐';
-  }
-
-  const saved = localStorage.getItem('theme');
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  applyTheme(saved || (prefersDark ? 'dark' : 'light'));
-
-  btn.addEventListener('click', (e) => {
-    e.preventDefault();
-    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    applyTheme(next);
-    localStorage.setItem('theme', next);
-  });
-})();
-</script>
 </body>
 </html>
