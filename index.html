@@ -270,9 +270,13 @@ const PALETTES = {
     .archive .grid{grid-template-columns: repeat(2, 1fr) !important}
     .about{grid-template-columns:1fr}
   }
+  
   [data-theme="dark"] .archive .cell img,
   [data-theme="dark"] .about .portrait img{
   filter: brightness(0.92);
+}
+[data-theme="dark"] .lightbox .stage img{
+  filter: none;
 }
 </style>
 </head>

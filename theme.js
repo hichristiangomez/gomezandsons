@@ -16,14 +16,22 @@
     if(btn) btn.textContent = theme === 'dark' ? '◑' : '◐';
   }
 
-  const saved = localStorage.getItem('theme');
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  applyTheme(saved || (prefersDark ? 'dark' : 'light'));
+  function currentTheme(){
+    const saved = localStorage.getItem('theme');
+    if(saved) return saved;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
 
+  // Apply immediately
+  applyTheme(currentTheme());
+
+  // Re-apply AFTER the Tweaks script finishes so it can't override us.
+  // Tweaks runs on DOMContentLoaded, so we wait one tick past that.
   document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => applyTheme(currentTheme()), 0);
+
     const btn = document.getElementById('themeToggle');
     if(!btn) return;
-    applyTheme(document.documentElement.getAttribute('data-theme'));
     btn.addEventListener('click', (e) => {
       e.preventDefault();
       const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
@@ -31,4 +39,14 @@
       localStorage.setItem('theme', next);
     });
   });
+
+  // Also re-apply if anything else fiddles with CSS variables later
+  // (catches the Tweaks panel's apply() function)
+  const observer = new MutationObserver(() => {
+    const wantTheme = currentTheme();
+    if(document.documentElement.getAttribute('data-theme') !== wantTheme){
+      applyTheme(wantTheme);
+    }
+  });
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['style'] });
 })();
