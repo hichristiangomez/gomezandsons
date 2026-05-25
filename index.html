@@ -270,6 +270,10 @@ const PALETTES = {
     .archive .grid{grid-template-columns: repeat(2, 1fr) !important}
     .about{grid-template-columns:1fr}
   }
+  [data-theme="dark"] .archive .cell img,
+  [data-theme="dark"] .about .portrait img{
+  filter: brightness(0.92);
+}
 </style>
 </head>
 <body>
@@ -283,6 +287,7 @@ const PALETTES = {
       <li><a href="all.html">All</a></li>
       <li><a href="#about">About</a></li>
       <li><a href="#contact">Contact</a></li>
+      <li><a href="#" id="themeToggle" aria-label="Toggle dark mode">◐</a></li>
     </ul>
   </div>
 </nav>
@@ -554,5 +559,33 @@ const PALETTES = {
 })();
 </script>
 
+<script>
+(function(){
+  const btn = document.getElementById('themeToggle');
+  if(!btn) return;
+
+  function applyTheme(theme){
+    const p = PALETTES[theme === 'dark' ? 'ink' : 'paper'];
+    const r = document.documentElement.style;
+    r.setProperty('--bg', p.bg);
+    r.setProperty('--ink', p.ink);
+    r.setProperty('--mute', p.mute);
+    r.setProperty('--line', p.line);
+    document.documentElement.setAttribute('data-theme', theme);
+    btn.textContent = theme === 'dark' ? '◑' : '◐';
+  }
+
+  const saved = localStorage.getItem('theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  applyTheme(saved || (prefersDark ? 'dark' : 'light'));
+
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
+    localStorage.setItem('theme', next);
+  });
+})();
+</script>
 </body>
 </html>
